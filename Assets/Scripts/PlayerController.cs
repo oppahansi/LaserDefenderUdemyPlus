@@ -4,18 +4,28 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
 
     public float speed = 5.0f;
+    public float rotateSpeed = 0.1f;
     public float padding = 1f;
     public GameObject projectile;
     public float projectileSpeed;
     public float firingRate = 0.2f;
-    public float health = 250f;
+    public float health = 350f;
+    public float maxHealth = 350f;
     public AudioClip fireSound;
+    public AudioClip deathSound;
+    public GameObject explosion;
+    public GameObject healthBar;
 
     private float xMin;
     private float xMax;
+    private SpriteRenderer image;
+    private PolygonCollider2D collider;
 
 	// Use this for initialization
 	void Start () {
+        image = GetComponent<SpriteRenderer>();
+        collider = GetComponent<PolygonCollider2D>();
+
         float distance = transform.position.z - Camera.main.transform.position.z;
         Vector3 leftMost = Camera.main.ViewportToWorldPoint(new Vector3(0f, 0f, distance));
         Vector3 rightMost = Camera.main.ViewportToWorldPoint(new Vector3(1f, 0f, distance));
@@ -39,11 +49,30 @@ public class PlayerController : MonoBehaviour {
         {
             //transform.position += new Vector3(-speed * Time.deltaTime, 0f, 0f);
             transform.position += Vector3.left * speed * Time.deltaTime;
+
+            /*
+             Rotation on sprites does not look that good ^^
+            float rotation = Mathf.Clamp(Vector3.right.x * rotateSpeed, 0f, 0.35f);
+            if (transform.localRotation.y < 0.35f)
+            {
+                transform.Rotate(transform.localRotation.x, (rotation + rotateSpeed), transform.rotation.z);
+            }*/
+           
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
             //transform.position += new Vector3(speed * Time.deltaTime, 0f, 0f);
             transform.position += Vector3.right * speed * Time.deltaTime;
+
+            /*
+             Rotation on sprites does not look that good ^^
+            float rotation = Mathf.Clamp(Vector3.left.x * rotateSpeed, 0f, -0.35f);
+            print(transform.localRotation.y);
+            if (transform.localRotation.y > -0.35f)
+            {
+                transform.Rotate(transform.localRotation.x, (rotation - rotateSpeed), transform.rotation.z);
+            }
+            */
         }
 
         // Restrict the player to game space
@@ -58,13 +87,33 @@ public class PlayerController : MonoBehaviour {
         if (missile)
         {
             health -= missile.GetDamage();
+            SetHealthBar();
             missile.Hit();
 
             if (health <= 0)
             {
-                Die();
+                image.enabled = false;
+                collider.enabled = false;
+                AudioSource.PlayClipAtPoint(deathSound, transform.position);
+
+                explosion = Instantiate(explosion, transform.position, Quaternion.identity) as GameObject;
+                Destroy(explosion, 2f);
+
+                Invoke("Die", 2f);
             }
         }
+    }
+
+    void SetHealthBar()
+    {
+        float healthScale = health / maxHealth;
+        healthBar.transform.localScale = new Vector3(Mathf.Clamp(healthScale, 0, 1), healthBar.transform.localScale.y, healthBar.transform.localScale.z);
+    }
+
+    public void AddHealth (int addHealth)
+    {
+        health += addHealth;
+        SetHealthBar();
     }
 
     void Die()

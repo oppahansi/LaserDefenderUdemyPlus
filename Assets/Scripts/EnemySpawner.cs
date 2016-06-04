@@ -15,12 +15,14 @@ public class EnemySpawner : MonoBehaviour {
     private bool movingRight = false;
     private float xMin;
     private float xMax;
+    private PlayerController player;
 
 	// Use this for initialization
 	void Start () {
         float distanceToCamera = transform.position.z - Camera.main.transform.position.z;
         Vector3 leftBoundary = Camera.main.ViewportToWorldPoint(new Vector3(0f, 0f, distanceToCamera));
         Vector3 rightBoundary = Camera.main.ViewportToWorldPoint(new Vector3(1f, 0f, distanceToCamera));
+        player = GameObject.Find("Player").GetComponent<PlayerController>();
 
         xMin = leftBoundary.x + 0.5f * width;
         xMax = rightBoundary.x - 0.5f * width;
@@ -91,6 +93,10 @@ public class EnemySpawner : MonoBehaviour {
         }
 
         enemyWave++;
+        if (player.health < player.maxHealth)
+        {
+            player.AddHealth(50);
+        }
 
         return true;
     }
