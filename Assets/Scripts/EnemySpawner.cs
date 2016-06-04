@@ -4,6 +4,8 @@ using System;
 
 public class EnemySpawner : MonoBehaviour {
 
+    public static int enemyWave;
+
     public GameObject enemyPrefab;
     public float width = 10f;
     public float heigth = 5f;
@@ -23,16 +25,8 @@ public class EnemySpawner : MonoBehaviour {
         xMin = leftBoundary.x + 0.5f * width;
         xMax = rightBoundary.x - 0.5f * width;
 
+        enemyWave = 1;
         SpawnUntilFull();
-    }
-
-    public void SpawnEnemies()
-    {
-        foreach (Transform child in transform)
-        {
-            GameObject enemy = Instantiate(enemyPrefab, child.transform.position, Quaternion.identity) as GameObject;
-            enemy.transform.parent = child;
-        }
     }
 
     void SpawnUntilFull()
@@ -95,6 +89,8 @@ public class EnemySpawner : MonoBehaviour {
                 return false;
             }
         }
+
+        enemyWave++;
 
         return true;
     }

@@ -10,6 +10,7 @@ public class EnemyBehaviour : MonoBehaviour {
     public int scoreValue = 150;
     public AudioClip fireSound;
     public AudioClip deathSound;
+    public GameObject explosion;
 
     private ScoreKeeper scoreKeeper;
 
@@ -45,6 +46,8 @@ public class EnemyBehaviour : MonoBehaviour {
 
             if (health <= 0)
             {
+                explosion = Instantiate(explosion, transform.position, Quaternion.identity) as GameObject;
+                Destroy(explosion, 2f);
                 Die();
             }
         }
@@ -54,6 +57,7 @@ public class EnemyBehaviour : MonoBehaviour {
     {
         AudioSource.PlayClipAtPoint(deathSound, transform.position);
         scoreKeeper.Score(scoreValue);
+
         Destroy(gameObject);
     }
 
