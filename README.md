@@ -7,5 +7,6 @@ My additions so far:
 - Wave counter
 - Particle system for explosions
 - Delayed scene sweitch between Game and End screen
+- Health system + UI element
 
 Game Playable at : http://oppahansi.com/games/laserdefender/index.html
