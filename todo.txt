@@ -1,0 +1,11 @@
+TODO:
+
+- Power Ups
+- Bosses
+- Different Enemies
+- Level system
+- Statistics
+- Story Mode
+- Settings (Auto shooting, Volume etc)
+- Better Name?
+- WASD Controls + Mouse
