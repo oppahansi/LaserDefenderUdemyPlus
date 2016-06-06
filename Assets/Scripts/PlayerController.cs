@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour {
     private float xMax;
     private SpriteRenderer image;
     private PolygonCollider2D collider;
+    private bool isDead = false;
 
 	// Use this for initialization
 	void Start () {
@@ -35,17 +36,17 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && !isDead)
         {
             InvokeRepeating("Fire", 0.000001f, firingRate);
         }
 
-        if (Input.GetKeyUp(KeyCode.Space))
+        if ((Input.GetKeyUp(KeyCode.Space) || Input.GetMouseButtonUp(0)) && !isDead)
         {
             CancelInvoke("Fire");
         }
 
-	    if (Input.GetKey(KeyCode.LeftArrow))
+	    if ((Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)) && !isDead)
         {
             //transform.position += new Vector3(-speed * Time.deltaTime, 0f, 0f);
             transform.position += Vector3.left * speed * Time.deltaTime;
@@ -59,7 +60,7 @@ public class PlayerController : MonoBehaviour {
             }*/
            
         }
-        else if (Input.GetKey(KeyCode.RightArrow))
+        else if ((Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) && !isDead)
         {
             //transform.position += new Vector3(speed * Time.deltaTime, 0f, 0f);
             transform.position += Vector3.right * speed * Time.deltaTime;
@@ -94,6 +95,7 @@ public class PlayerController : MonoBehaviour {
             {
                 image.enabled = false;
                 collider.enabled = false;
+                isDead = true;
                 AudioSource.PlayClipAtPoint(deathSound, transform.position);
 
                 explosion = Instantiate(explosion, transform.position, Quaternion.identity) as GameObject;
@@ -125,8 +127,11 @@ public class PlayerController : MonoBehaviour {
 
     void Fire()
     {
-        GameObject beam = Instantiate(projectile, transform.position, Quaternion.identity) as GameObject;
-        beam.GetComponent<Rigidbody2D>().velocity = new Vector3(0f, projectileSpeed, 0f);
-        AudioSource.PlayClipAtPoint(fireSound, transform.position);
+        if (!isDead)
+        {
+            GameObject beam = Instantiate(projectile, transform.position, Quaternion.identity) as GameObject;
+            beam.GetComponent<Rigidbody2D>().velocity = new Vector3(0f, projectileSpeed, 0f);
+            AudioSource.PlayClipAtPoint(fireSound, transform.position);
+        }
     }
 }
