@@ -16,9 +16,11 @@ public class EnemySpawner : MonoBehaviour {
     private float xMin;
     private float xMax;
     private PlayerController player;
+    private GameObject formation;
 
 	// Use this for initialization
 	void Start () {
+        formation = GameObject.Find("EnemyFormation2");
         float distanceToCamera = transform.position.z - Camera.main.transform.position.z;
         Vector3 leftBoundary = Camera.main.ViewportToWorldPoint(new Vector3(0f, 0f, distanceToCamera));
         Vector3 rightBoundary = Camera.main.ViewportToWorldPoint(new Vector3(1f, 0f, distanceToCamera));
@@ -93,6 +95,9 @@ public class EnemySpawner : MonoBehaviour {
         }
 
         enemyWave++;
+
+        EnemyBehaviour.shotsPerSecond += 0.01f;
+
         if (player.health < player.maxHealth)
         {
             player.AddHealth(50);

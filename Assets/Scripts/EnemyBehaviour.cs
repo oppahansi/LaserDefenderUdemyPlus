@@ -3,16 +3,19 @@ using System.Collections;
 
 public class EnemyBehaviour : MonoBehaviour {
 
+    public static float shotsPerSecond = 0.5f;
+
     public GameObject projectile;
     public float health = 150f;
     public float projectileSpeed = 10f;
-    public float shotsPerSecond = 0.5f;
     public int scoreValue = 150;
     public AudioClip fireSound;
     public AudioClip deathSound;
     public GameObject explosion;
+    public GameObject hitEffect;
 
     private ScoreKeeper scoreKeeper;
+    private Color hitEffectColor;
 
     void Start ()
     {
@@ -21,6 +24,7 @@ public class EnemyBehaviour : MonoBehaviour {
 
     void Update()
     {
+        
         float probability = Time.deltaTime * shotsPerSecond;
         if (Random.value < probability)
         {
@@ -42,6 +46,8 @@ public class EnemyBehaviour : MonoBehaviour {
         if (missile)
         {
             health -= missile.GetDamage();
+
+            Hit(collider);
             missile.Hit();
 
             if (health <= 0)
@@ -53,12 +59,36 @@ public class EnemyBehaviour : MonoBehaviour {
         }
     }
 
+    void Hit(Collider2D collider)
+    {
+        if (hitEffect)
+        {
+            hitEffect = Instantiate(hitEffect, collider.transform.position, Quaternion.identity) as GameObject;
+            hitEffectColor = collider.gameObject.GetComponent<SpriteRenderer>().color;
+            hitEffect.GetComponent<ParticleSystem>().startColor = hitEffectColor;
+        } 
+    }
+
     void Die()
     {
         AudioSource.PlayClipAtPoint(deathSound, transform.position);
         scoreKeeper.Score(scoreValue);
 
         Destroy(gameObject);
+    }
+
+    public float ShotsPerSecond
+    {
+        get
+        {
+            //Some other code
+            return shotsPerSecond;
+        }
+        set
+        {
+            //Some other code
+            shotsPerSecond = value;
+        }
     }
 
 }

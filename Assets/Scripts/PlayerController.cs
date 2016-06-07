@@ -15,15 +15,17 @@ public class PlayerController : MonoBehaviour {
     public AudioClip deathSound;
     public GameObject explosion;
     public GameObject healthBar;
+    public GameObject hitEffect;
 
     private float xMin;
     private float xMax;
     private SpriteRenderer image;
     private PolygonCollider2D collider;
     private bool isDead = false;
+    private Color hitEffectColor;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         image = GetComponent<SpriteRenderer>();
         collider = GetComponent<PolygonCollider2D>();
 
@@ -87,11 +89,16 @@ public class PlayerController : MonoBehaviour {
 
         if (missile)
         {
-            health -= missile.GetDamage();
-            SetHealthBar();
-            missile.Hit();
+            if (health > 0)
+            {
+                health -= missile.GetDamage();
 
-            if (health <= 0)
+                Hit(collider);
+                SetHealthBar();
+                missile.Hit();
+            }
+            
+            if (health <= 0 && image.enabled)
             {
                 image.enabled = false;
                 collider.enabled = false;
@@ -103,6 +110,15 @@ public class PlayerController : MonoBehaviour {
 
                 Invoke("Die", 2f);
             }
+        }
+    }
+
+    void Hit(Collider2D collider)
+    {
+        if (hitEffect && health > 0) {
+            hitEffect = Instantiate(hitEffect, collider.transform.position, Quaternion.identity) as GameObject;
+            hitEffectColor = collider.gameObject.GetComponent<SpriteRenderer>().color;
+            hitEffect.GetComponent<ParticleSystem>().startColor = hitEffectColor;
         }
     }
 
