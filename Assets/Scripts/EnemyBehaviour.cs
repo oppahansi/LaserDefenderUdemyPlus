@@ -16,9 +16,15 @@ public class EnemyBehaviour : MonoBehaviour {
 
     private ScoreKeeper scoreKeeper;
     private Color hitEffectColor;
+    private GameObject[] laserPositions;
 
     void Start ()
     {
+        laserPositions = new GameObject[transform.childCount];
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            laserPositions[i] = transform.GetChild(i).gameObject;
+        }
         scoreKeeper = GameObject.Find("Score").GetComponent<ScoreKeeper>();
     }
 
@@ -26,7 +32,7 @@ public class EnemyBehaviour : MonoBehaviour {
     {
         
         float probability = Time.deltaTime * shotsPerSecond;
-        if (Random.value < probability)
+        if (Random.value < probability && health > 0)
         {
             Fire();
         }
@@ -34,9 +40,13 @@ public class EnemyBehaviour : MonoBehaviour {
 
     void Fire()
     {
-        GameObject missile = Instantiate(projectile, transform.position, Quaternion.Euler(0f, 0f, 180)) as GameObject;
-        missile.GetComponent<Rigidbody2D>().velocity = new Vector2(0f, -projectileSpeed);
-        AudioSource.PlayClipAtPoint(fireSound, transform.position);
+        if (gameObject.transform.childCount > 0)
+        {
+            Debug.Log("Laser Positions Count : " + laserPositions.Length);
+            GameObject missile = Instantiate(projectile, laserPositions[Random.Range(0, laserPositions.Length)].transform.position, Quaternion.Euler(0f, 0f, 180)) as GameObject;
+            missile.GetComponent<Rigidbody2D>().velocity = new Vector2(0f, -projectileSpeed);
+            AudioSource.PlayClipAtPoint(fireSound, transform.position);
+        }
     }
 
     void OnTriggerEnter2D(Collider2D collider)
@@ -63,9 +73,9 @@ public class EnemyBehaviour : MonoBehaviour {
     {
         if (hitEffect)
         {
-            hitEffect = Instantiate(hitEffect, collider.transform.position, Quaternion.identity) as GameObject;
+            GameObject cloneHitEffect = Instantiate(hitEffect, collider.transform.position, Quaternion.identity) as GameObject;
             hitEffectColor = collider.gameObject.GetComponent<SpriteRenderer>().color;
-            hitEffect.GetComponent<ParticleSystem>().startColor = hitEffectColor;
+            cloneHitEffect.GetComponent<ParticleSystem>().startColor = hitEffectColor;
         } 
     }
 

@@ -87,11 +87,13 @@ public class PlayerController : MonoBehaviour {
     {
         Projectile missile = collider.gameObject.GetComponent<Projectile>();
 
+        Debug.Log(collider.transform.position);
+
         if (missile)
         {
             if (health > 0)
             {
-                health -= missile.GetDamage();
+                //health -= missile.GetDamage();
 
                 Hit(collider);
                 SetHealthBar();
@@ -115,10 +117,12 @@ public class PlayerController : MonoBehaviour {
 
     void Hit(Collider2D collider)
     {
+        Debug.Log("Health: " + health + " -- Collision point: " + collider.transform.position + " -- Hiteffect : " + hitEffect);
+
         if (hitEffect && health > 0) {
-            hitEffect = Instantiate(hitEffect, collider.transform.position, Quaternion.identity) as GameObject;
+            GameObject cloneHitEffect = Instantiate(hitEffect, collider.transform.position, Quaternion.identity) as GameObject;
             hitEffectColor = collider.gameObject.GetComponent<SpriteRenderer>().color;
-            hitEffect.GetComponent<ParticleSystem>().startColor = hitEffectColor;
+            cloneHitEffect.GetComponent<ParticleSystem>().startColor = hitEffectColor;
         }
     }
 
